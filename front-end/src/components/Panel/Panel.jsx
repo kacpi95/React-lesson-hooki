@@ -61,30 +61,47 @@ export function Panel() {
   //     </section>
   //   </>
   // );
-     const [users, setUsers] = useState([]);
-    
-    useEffect(() => {
-        fetch("https://jsonplaceholder.typicode.com/users")
-            .then(res => res.json())
-            .then(res => setUsers(res));
-    }, []);
+  const [user, setUser] = useState({});
+  const [username, setUsername] = useState('');
 
-    function handleDeleteClick(id) {
-        fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
-            method: 'DELETE'
-        })
-        .then((res) => res.json())
-        .then(() => {
-            setUsers(prevUsers => prevUsers.filter(item => item.id !== id));
-        });
-    }
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users/1')
+      .then((res) => res.json())
+      .then((res) => setUser(res));
+  }, []);
 
-    return (<>
-        <h1>Lista osób</h1>
-        <ul>
-        {users.map(user => <li key={user.id}>
-            {user.username} <button onClick={() => handleDeleteClick(user.id)}>X</button>
-        </li>)}
-        </ul>
-    </>);
+  function handleSubmit(e) {
+    e.preventDefault();
+    fetch(`https://jsonplaceholder.typicode.com/users/${user.id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({
+        username: username,
+      }),
+      headers: {
+        'Content-type': 'application/json; charset=UTF-8',
+      },
+    })
+      .then((res) => res.json())
+      .then((user) => {
+        setUser(user);
+        setUsername('');
+      });
+  }
+
+  return (
+    <>
+      <h1>Dane osobowe </h1>
+      <h2>Username: {user.username}</h2>
+      <h2>Email: {user.email}</h2>
+      <h2>Miasto: {user?.address?.city}</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder='Zmień nazwę'
+        />
+        <button disabled={username.trim().length === 0}>Zapisz</button>
+      </form>
+    </>
+  );
 }
