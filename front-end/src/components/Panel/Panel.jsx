@@ -61,46 +61,30 @@ export function Panel() {
   //     </section>
   //   </>
   // );
-  const [users, setUsers] = useState([]);
-  const [username, setUsername] = useState('');
-  useEffect(() => {
-    fetch('https://jsonplaceholder.typicode.com/users')
-      .then((res) => res.json())
-      .then((res) => setUsers(res));
-  }, []);
+     const [users, setUsers] = useState([]);
+    
+    useEffect(() => {
+        fetch("https://jsonplaceholder.typicode.com/users")
+            .then(res => res.json())
+            .then(res => setUsers(res));
+    }, []);
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    fetch('https://jsonplaceholder.typicode.com/users', {
-      method: 'POST',
-      body: JSON.stringify({
-        username,
-        
-      }),
-      headers: {
-        'Content-type': 'application/json; charset=UTF-8',
-      },
-    })
-      .then((res) => res.json())
-      .then((res) => setUsers((prev) => [res, ...prev]), setUsername(''));
-  }
+    function handleDeleteClick(id) {
+        fetch(`https://jsonplaceholder.typicode.com/users/${id}`, {
+            method: 'DELETE'
+        })
+        .then((res) => res.json())
+        .then(() => {
+            setUsers(prevUsers => prevUsers.filter(item => item.id !== id));
+        });
+    }
 
-  return (
-    <>
-      <h1>Lista osób</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          placeholder='Wpisz imię'
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <button disabled={username.trim().length === 0}>Dodaj</button>
-      </form>
-      <ul>
-        {users.map((user) => (
-          <li key={user.id}>{user.username}</li>
-        ))}
-      </ul>
-    </>
-  );
+    return (<>
+        <h1>Lista osób</h1>
+        <ul>
+        {users.map(user => <li key={user.id}>
+            {user.username} <button onClick={() => handleDeleteClick(user.id)}>X</button>
+        </li>)}
+        </ul>
+    </>);
 }
