@@ -3,8 +3,12 @@ import styles from './Panel.module.css';
 import { Form } from '../Form/Form';
 import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 import { FilterButton } from '../FilterButton/FilterButton';
+import { useState } from 'react';
 
 export function Panel() {
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   return (
     <>
       <ErrorMessage></ErrorMessage>
