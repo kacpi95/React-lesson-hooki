@@ -50,6 +50,13 @@ export function Panel() {
       });
   }
 
+  function handleFilterClick(category) {
+    const params = category ? `?category=${category}` : '';
+    fetch(`http://localhost:3000/words${params}`).then((res) =>
+      res.json().then((res) => setData(res))
+    );
+  }
+
   if (isLoading) {
     return <p>Ładowanie...</p>;
   }
@@ -59,9 +66,15 @@ export function Panel() {
       <section className={styles.section}>
         <Form onFormSubmit={handleFormSubmit} />
         <div className={styles.filters}>
-          <FilterButton>Wszystkie</FilterButton>
-          <FilterButton>Rzeczwoniki</FilterButton>
-          <FilterButton>Czasowniki</FilterButton>
+          <FilterButton onClick={() => handleFilterClick(null)}>
+            Wszystkie
+          </FilterButton>
+          <FilterButton onClick={() => handleFilterClick('noun')}>
+            Rzeczwoniki
+          </FilterButton>
+          <FilterButton onClick={() => handleFilterClick('verb')}>
+            Czasowniki
+          </FilterButton>
         </div>
         <List data={data} onDeleteItem={onDeleteItem} />
       </section>
