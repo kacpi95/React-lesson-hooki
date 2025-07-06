@@ -19,9 +19,29 @@ export function Panel() {
       });
   }, []);
 
+  function onDeleteItem(id) {
+    fetch(`http://localhost3000/words/${id}`, {
+      method: 'DELETE',
+    })
+      .then((res) => {
+        if (res.ok) {
+          setData((prevData) => prevData.filter((item) => item.id !== id));
+        }
+      })
+      .catch((e) => {
+        setError(e.message);
+        setTimeout(() => {
+          setError(null);
+        }, 3000);
+      });
+  }
+
+  if (isLoading) {
+    return <p>Ładowanie...</p>;
+  }
   return (
     <>
-      <ErrorMessage></ErrorMessage>
+      {error && <ErrorMessage>{error}</ErrorMessage>}
       <section className={styles.section}>
         <Form />
         <div className={styles.filters}>
@@ -29,7 +49,7 @@ export function Panel() {
           <FilterButton>Rzeczwoniki</FilterButton>
           <FilterButton>Czasowniki</FilterButton>
         </div>
-        <List />
+        <List data={data} onDeleteItem={onDeleteItem} />
       </section>
     </>
   );
