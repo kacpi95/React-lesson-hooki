@@ -11,7 +11,7 @@ export function Panel() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost3000/words')
+    fetch('http://localhost:3000/words')
       .then((res) => res.json())
       .then((res) => {
         setData(res);
@@ -19,8 +19,22 @@ export function Panel() {
       });
   }, []);
 
+  function handleFormSubmit(formData) {
+    fetch('http://localhost:3000/words', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        setData((prev) => [...prev, res]);
+      });
+  }
+
   function onDeleteItem(id) {
-    fetch(`http://localhost3000/words/${id}`, {
+    fetch(`http://localhost:3000/words/${id}`, {
       method: 'DELETE',
     })
       .then((res) => {
@@ -43,7 +57,7 @@ export function Panel() {
     <>
       {error && <ErrorMessage>{error}</ErrorMessage>}
       <section className={styles.section}>
-        <Form />
+        <Form onFormSubmit={handleFormSubmit} />
         <div className={styles.filters}>
           <FilterButton>Wszystkie</FilterButton>
           <FilterButton>Rzeczwoniki</FilterButton>
