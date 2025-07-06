@@ -56,6 +56,7 @@ export function Panel() {
     fetch(`http://localhost:3000/words${params}`).then((res) =>
       res.json().then((res) => setData(res))
     );
+    setSelectedCategory(category);
   }
 
   if (isLoading) {
@@ -67,13 +68,22 @@ export function Panel() {
       <section className={styles.section}>
         <Form onFormSubmit={handleFormSubmit} />
         <div className={styles.filters}>
-          <FilterButton onClick={() => handleFilterClick(null)}>
+          <FilterButton
+            active={selectedCategory === null}
+            onClick={() => handleFilterClick(null)}
+          >
             Wszystkie
           </FilterButton>
-          <FilterButton onClick={() => handleFilterClick('noun')}>
+          <FilterButton
+            active={selectedCategory === 'noun'}
+            onClick={() => handleFilterClick('noun')}
+          >
             Rzeczwoniki
           </FilterButton>
-          <FilterButton onClick={() => handleFilterClick('verb')}>
+          <FilterButton
+            active={selectedCategory === 'verb'}
+            onClick={() => handleFilterClick('verb')}
+          >
             Czasowniki
           </FilterButton>
         </div>
