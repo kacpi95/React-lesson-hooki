@@ -12,13 +12,14 @@ export function Panel() {
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3000/words')
+    const params = selectedCategory ? `?category=${selectedCategory}` : '';
+    fetch(`http://localhost:3000/words${params}`)
       .then((res) => res.json())
       .then((res) => {
         setData(res);
         setIsLoading(false);
       });
-  }, []);
+  }, [selectedCategory]);
 
   function handleFormSubmit(formData) {
     fetch('http://localhost:3000/words', {
@@ -52,10 +53,6 @@ export function Panel() {
   }
 
   function handleFilterClick(category) {
-    const params = category ? `?category=${category}` : '';
-    fetch(`http://localhost:3000/words${params}`).then((res) =>
-      res.json().then((res) => setData(res))
-    );
     setSelectedCategory(category);
   }
 
