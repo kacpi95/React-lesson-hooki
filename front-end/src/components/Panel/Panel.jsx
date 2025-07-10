@@ -1,34 +1,38 @@
 import { List } from '../List/List';
 import styles from './Panel.module.css';
 import { Form } from '../Form/Form';
-import { ErrorMessage } from '../ErrorMessage/ErrorMessage';
 import { FilterButton } from '../FilterButton/FilterButton';
 import { useEffect, useMemo, useState } from 'react';
 import { getCategoryInfo } from '../../utils/getCategoryInfo';
 import { Info } from '../Info/Info';
 
-export function Panel() {
+export function Panel({ onError }) {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     let isCanceled = false;
     const params = selectedCategory ? `?category=${selectedCategory}` : '';
     fetch(`http://localhost:3000/words${params}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        throw new Error('Błąd ładowania danych!');
+      })
       .then((res) => {
         if (!isCanceled) {
           setData(res);
           setIsLoading(false);
         }
-      });
+      })
+      .catch(onError);
 
     return () => {
       isCanceled = true;
     };
-  }, [selectedCategory]);
+  }, [selectedCategory, onError]);
 
   const categoryInfo = useMemo(
     () => getCategoryInfo(selectedCategory),
@@ -58,12 +62,7 @@ export function Panel() {
           setData((prevData) => prevData.filter((item) => item.id !== id));
         }
       })
-      .catch((e) => {
-        setError(e.message);
-        setTimeout(() => {
-          setError(null);
-        }, 3000);
-      });
+      .catch(onError);
   }
 
   function handleFilterClick(category) {
@@ -75,7 +74,6 @@ export function Panel() {
   }
   return (
     <>
-      {error && <ErrorMessage>{error}</ErrorMessage>}
       <section className={styles.section}>
         <Info>{categoryInfo}</Info>
         <Form onFormSubmit={handleFormSubmit} />
